@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"time"
 )
@@ -94,7 +94,7 @@ func getWeeklyContributions(username, token string) (int, error) {
 		return 0, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
-	responseBody, err := ioutil.ReadAll(resp.Body)
+	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return 0, fmt.Errorf("failed to read response body: %v", err)
 	}

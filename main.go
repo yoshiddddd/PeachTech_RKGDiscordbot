@@ -4,14 +4,14 @@ import (
 	"log"
 	"os"
 
-	"github.com/aws/aws-lambda-go/lambda"
+	// "github.com/aws/aws-lambda-go/lambda"
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
 )
 
 func main() {
-	lambda.Start(handler)
-	// handler()
+	// lambda.Start(handler)
+	handler()
 }
 
 func handler() {
