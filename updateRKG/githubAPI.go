@@ -53,16 +53,20 @@ type GraphQLResponse struct {
 	Data Data `json:"data"`
 }
 
-func getWeeklyContributions(username, token string) (int, error) {
+func getWeeklyContributions(username, token string, isweek bool) (int, error) {
 	jst := time.FixedZone("JST", 9*60*60)
 	now := time.Now().In(jst)
-	oneDayAgo := now.AddDate(0, 0, 0)
-	oneWeekAgo := getThisWeekMonday()
+	endDay := now.AddDate(0, 0, 0)
+	startDay := time.Date(now.Year(), 1, 1, 0, 0, 0, 0, now.Location())
+	if isweek {
+		startDay = getThisWeekMonday()
+	}
+
 
 	variables := Variables{
 		Username: username,
-		From:     oneWeekAgo.Format(time.RFC3339),
-		To:       oneDayAgo.Format(time.RFC3339),
+		From:     startDay.Format(time.RFC3339),
+		To:       endDay.Format(time.RFC3339),
 	}
 
 	requestBody := GraphQLRequest{
