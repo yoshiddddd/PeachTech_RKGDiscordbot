@@ -9,6 +9,7 @@ import (
 	"cloud.google.com/go/firestore"
 	"google.golang.org/api/option"
 	"github.com/joho/godotenv"
+	"github.com/aws/aws-lambda-go/lambda"
 )
 type FirestoreUserData struct {
 	Githubid string `firestore:"githubID"`
@@ -21,7 +22,13 @@ var CREDENTIALS_FILE string
 var GITHUB_TOKEN string
 var client *firestore.Client
 var ctx context.Context
-func main(){
+
+func main() {
+	lambda.Start(handler)
+	// handler()
+}
+
+func handler(){
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
