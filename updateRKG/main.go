@@ -10,7 +10,7 @@ import (
 	"google.golang.org/api/option"
 	"github.com/joho/godotenv"
 )
-type FirestoreData struct {
+type FirestoreUserData struct {
 	Githubid string `firestore:"githubID"`
 	Name     string `firestore:"name"`
 }
@@ -28,6 +28,7 @@ func main(){
 	if PROJECT_ID == "" || USER_COLLECTION == "" || RKG_COLLECTION == "" || CREDENTIALS_FILE == "" || GITHUB_TOKEN == "" {
 		log.Fatalf("One or more required environment variables are missing")
 	}
+	log.Printf("月曜日 : %v", getThisWeekMonday())
 	//firesotreへの接続
 	ctx := context.Background()
 	sa := option.WithCredentialsFile(CREDENTIALS_FILE)
@@ -36,11 +37,18 @@ func main(){
 		log.Fatalf("Error creating Firestore client: %v", err)
 	}
 	defer client.Close()
-	docs, err := client.Collection(USER_COLLECTION).Documents(ctx).GetAll()
+	user_docs, err := client.Collection(USER_COLLECTION).Documents(ctx).GetAll()
 	//ユーザーごとに情報追加する
-		for _, doc := range docs {
-			var data FirestoreData
-			doc.DataTo(&data);
-			log.Printf("doc: %v", data)
+		for _, doc := range user_docs {
+			var user_data FirestoreUserData
+			doc.DataTo(&user_data);
+			// log.Printf("doc: %v", user_data)
+			user_id := user_data.Githubid
+			contributions, err := getWeeklyContributions(user_id, GITHUB_TOKEN)
+			if err != nil {
+				log.Fatalf("Error getting weekly contributions: %v", err)
+				return
+			}
+			log.Printf("user_id: %s, contributions: %d", user_id, contributions)
 		}
 }
